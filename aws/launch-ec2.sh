@@ -94,10 +94,20 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml build ba
 docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml up -d
 EOF
 
-echo "==> [5/5] Lancement de l'instance t2.micro"
+echo "==> [5/5] Lancement de l'instance (free tier)"
+INSTANCE_TYPE="${INSTANCE_TYPE:-}"
+if [[ -z "${INSTANCE_TYPE}" ]]; then
+  FT=$(aws ec2 describe-instance-types --instance-type t3.micro --query 'InstanceTypes[0].FreeTierEligible' --output text 2>/dev/null || echo false)
+  if [[ "${FT}" == "true" ]]; then
+    INSTANCE_TYPE=t3.micro
+  else
+    INSTANCE_TYPE=t2.micro
+  fi
+fi
+echo "    type d'instance: ${INSTANCE_TYPE}"
 INSTANCE_ID=$(aws ec2 run-instances \
   --image-id "${AMI}" \
-  --instance-type t2.micro \
+  --instance-type "${INSTANCE_TYPE}" \
   --key-name "${KEY_NAME}" \
   --security-group-ids "${SG_ID}" \
   --user-data "file://${WORKDIR}/user-data.sh" \
