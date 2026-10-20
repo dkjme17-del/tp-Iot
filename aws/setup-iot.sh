@@ -110,13 +110,13 @@ CERTS_URL=$(aws s3 presign "s3://${BUCKET}/certs.tar.gz" --expires-in 604800)
 
 echo "==> [6/6] Generation de deploy/.env"
 cat > deploy/.env <<EOF
-MQTT_ENDPOINT=${ENDPOINT}
-MQTT_TOPIC_PUB=${TOPIC_PREFIX}/station-01/mesures
-DEVICE_ID=station-01
-INTERVAL_MS=5000
-DASHBOARD_PORT=3000
-AWS_REGION=${REGION}
-CERTS_URL=${CERTS_URL}
+MQTT_ENDPOINT='${ENDPOINT}'
+MQTT_TOPIC_PUB='${TOPIC_PREFIX}/station-01/mesures'
+DEVICE_ID='station-01'
+INTERVAL_MS='5000'
+DASHBOARD_PORT='3000'
+AWS_REGION='${REGION}'
+CERTS_URL='${CERTS_URL}'
 EOF
 
 cat <<EOF

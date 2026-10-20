@@ -19,11 +19,18 @@ REPO_URL="${1:-}"
 [[ -n "${REPO_URL}" ]] || { echo "Usage: $0 https://github.com/<user>/<repo>.git"; exit 1; }
 [[ -f deploy/.env ]] || { echo "ERREUR: deploy/.env absent — lancez d'abord aws/setup-iot.sh"; exit 1; }
 
-set -a; source deploy/.env; set +a
-REGION="${AWS_REGION:?}"
-ENDPOINT="${MQTT_ENDPOINT:?}"
-CERTS_URL="${CERTS_URL:?}"
+get_env() {
+  { grep -E "^$1=" deploy/.env | head -n 1 | cut -d= -f2- | tr -d "'\"" || true; }
+}
+REGION="$(get_env AWS_REGION)"
+ENDPOINT="$(get_env MQTT_ENDPOINT)"
+CERTS_URL="$(get_env CERTS_URL)"
+DOCKERHUB_USER="$(get_env DOCKERHUB_USER)"
+[[ -n "${REGION}" ]] || REGION=$(aws configure get region 2>/dev/null || true)
 DOCKERHUB_USER="${DOCKERHUB_USER:-dkjme17}"
+[[ -n "${REGION}" ]] || { echo "ERREUR: region AWS inconnue (deploy/.env, AWS_REGION, aws configure)"; exit 1; }
+[[ -n "${ENDPOINT}" ]] || { echo "ERREUR: MQTT_ENDPOINT absent de deploy/.env — relancez aws/setup-iot.sh"; exit 1; }
+[[ -n "${CERTS_URL}" ]] || { echo "ERREUR: CERTS_URL absent de deploy/.env — relancez aws/setup-iot.sh"; exit 1; }
 
 ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 BUCKET="esatic-iot-certs-${ACCOUNT}"
