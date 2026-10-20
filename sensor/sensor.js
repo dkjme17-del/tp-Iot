@@ -13,8 +13,9 @@ const {
 
 const interval = Math.max(500, parseInt(INTERVAL_MS, 10) || 5000);
 
+const CLIENT_SUFFIX = process.env.CLIENT_SUFFIX || Math.random().toString(36).slice(2, 8);
 const options = {
-  clientId: `sensor-${DEVICE_ID}`,
+  clientId: `sensor-${DEVICE_ID}-${CLIENT_SUFFIX}`,
   keepalive: 30,
   reconnectPeriod: 5000,
   connectTimeout: 15000,

@@ -15,8 +15,9 @@ class Broker extends EventEmitter {
     super();
     this.connected = false;
 
+    const CLIENT_SUFFIX = process.env.CLIENT_SUFFIX || Math.random().toString(36).slice(2, 8);
     const options = {
-      clientId: "dashboard-backend",
+      clientId: `dashboard-backend-${CLIENT_SUFFIX}`,
       keepalive: 30,
       reconnectPeriod: 5000,
       connectTimeout: 15000,
