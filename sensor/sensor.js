@@ -36,7 +36,7 @@ let seq = 0;
 function publish() {
   seq += 1;
   const m = nextMeasurement(seq);
-  client.publish(MQTT_TOPIC, JSON.stringify(m), { qos: 1, retain: true }, (err) => {
+  client.publish(MQTT_TOPIC, JSON.stringify(m), { qos: 1 }, (err) => {
     if (err) console.error("[sensor] echec publication:", err.message);
     else console.log(`[sensor] #${m.seq} ${m.temperature}C ${m.humidity}%${m.ac ? " [clim]" : ""}`);
   });
