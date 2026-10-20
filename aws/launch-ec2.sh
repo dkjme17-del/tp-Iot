@@ -97,9 +97,11 @@ EOF
 echo "==> [5/5] Lancement de l'instance (free tier)"
 INSTANCE_TYPE="${INSTANCE_TYPE:-}"
 if [[ -z "${INSTANCE_TYPE}" ]]; then
-  FT_LIST=$(aws ec2 describe-instance-types --filters "Name=free-tier-eligible,Values=true" --query 'InstanceTypes[].InstanceType' --output text 2>/dev/null || true)
+  FT_LIST=$(aws ec2 describe-instance-types --filters "Name=free-tier-eligible,Values=true" --query 'InstanceTypes[].InstanceType' --output text 2>/dev/null | tr '\t' '\n' | tr -s '\n' ' ')
   echo "    types free tier disponibles: ${FT_LIST:-aucun}"
-  if [[ " ${FT_LIST} " == *" t3.micro "* ]]; then
+  if [[ " ${FT_LIST} " == *" t4g.micro "* ]]; then
+    INSTANCE_TYPE=t4g.micro
+  elif [[ " ${FT_LIST} " == *" t3.micro "* ]]; then
     INSTANCE_TYPE=t3.micro
   elif [[ " ${FT_LIST} " == *" t2.micro "* ]]; then
     INSTANCE_TYPE=t2.micro
