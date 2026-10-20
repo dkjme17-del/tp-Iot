@@ -13,7 +13,7 @@ accessibles depuis Internet.
 |---|---|
 | Code source | https://github.com/dkjme17-del/tp-Iot |
 | Image Docker Hub (capteur) | https://hub.docker.com/r/dkjme17/esatic-sensor |
-| Tableau de bord en ligne | _à compléter : URL `http://<IP_EC2>:3000`_ |
+| Tableau de bord en ligne | http://54.227.2.193:3000 |
 | Compte rendu | ce document |
 
 ## Architecture
