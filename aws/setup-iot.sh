@@ -67,8 +67,15 @@ cat > "${WORKDIR}/policy.json" <<EOF
   ]
 }
 EOF
-aws iot create-policy --policy-name "${POLICY}" --cli-input-json file://"${WORKDIR}/policy.json" >/dev/null 2>&1 \
-  || echo "    politique deja existante, on reutilise"
+if aws iot create-policy --policy-name "${POLICY}" --policy-document "file://${WORKDIR}/policy.json" 2>"${WORKDIR}/policy.err"; then
+  echo "    politique creee"
+elif grep -q "ResourceAlreadyExistsException" "${WORKDIR}/policy.err"; then
+  echo "    politique deja existante, on reutilise"
+else
+  echo "ERREUR: creation de la politique impossible:"
+  cat "${WORKDIR}/policy.err"
+  exit 1
+fi
 
 echo "==> [4/6] Certificat client X.509 (mTLS)"
 CERT_ARN=$(aws iot create-keys-and-certificate \
