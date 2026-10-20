@@ -14,9 +14,11 @@ const {
 const interval = Math.max(500, parseInt(INTERVAL_MS, 10) || 5000);
 
 const options = {
-  clientId: `sensor-${DEVICE_ID}-${process.pid}`,
+  clientId: `sensor-${DEVICE_ID}`,
+  keepalive: 30,
   reconnectPeriod: 5000,
-  connectTimeout: 10000,
+  connectTimeout: 15000,
+  clean: true,
 };
 
 if (CERT_PATH && KEY_PATH && CA_PATH) {
@@ -29,7 +31,23 @@ console.log(`[sensor] ${DEVICE_ID} -> ${MQTT_URL} (topic: ${MQTT_TOPIC}, tous le
 
 const client = mqtt.connect(MQTT_URL, options);
 
-client.on("connect", () => console.log("[sensor] connecte au broker MQTT"));
+let seq = 0;
+function publish() {
+  seq += 1;
+  const m = nextMeasurement(seq);
+  client.publish(MQTT_TOPIC, JSON.stringify(m), { qos: 1, retain: true }, (err) => {
+    if (err) console.error("[sensor] echec publication:", err.message);
+    else console.log(`[sensor] #${m.seq} ${m.temperature}C ${m.humidity}%${m.ac ? " [clim]" : ""}`);
+  });
+}
+
+let timer = null;
+
+client.on("connect", () => {
+  console.log("[sensor] connecte au broker MQTT");
+  publish();
+  if (!timer) timer = setInterval(publish, interval);
+});
 client.on("error", (err) => console.error("[sensor] erreur MQTT:", err.message));
 client.on("offline", () => console.warn("[sensor] hors-ligne, tentative de reconnexion..."));
 
@@ -60,13 +78,3 @@ function nextMeasurement(seq) {
     ts: new Date().toISOString(),
   };
 }
-
-let seq = 0;
-setInterval(() => {
-  seq += 1;
-  const m = nextMeasurement(seq);
-  client.publish(MQTT_TOPIC, JSON.stringify(m), { qos: 1, retain: true }, (err) => {
-    if (err) console.error("[sensor] echec publication:", err.message);
-    else console.log(`[sensor] #${m.seq} ${m.temperature}C ${m.humidity}%${m.ac ? " [clim]" : ""}`);
-  });
-}, interval);

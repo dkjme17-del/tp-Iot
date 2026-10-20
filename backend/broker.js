@@ -16,9 +16,11 @@ class Broker extends EventEmitter {
     this.connected = false;
 
     const options = {
-      clientId: `dashboard-backend-${process.pid}`,
+      clientId: "dashboard-backend",
+      keepalive: 30,
       reconnectPeriod: 5000,
-      connectTimeout: 10000,
+      connectTimeout: 15000,
+      clean: true,
     };
     if (CERT_PATH && KEY_PATH && CA_PATH) {
       options.cert = fs.readFileSync(CERT_PATH);
