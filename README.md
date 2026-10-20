@@ -11,8 +11,8 @@ accessibles depuis Internet.
 
 | Livrable | Lien |
 |---|---|
-| Code source | _à compléter : lien GitHub_ |
-| Image Docker Hub (capteur) | _à compléter : lien Docker Hub_ |
+| Code source | https://github.com/dkjme17-del/tp-Iot |
+| Image Docker Hub (capteur) | https://hub.docker.com/r/dkjme17/esatic-sensor |
 | Tableau de bord en ligne | _à compléter : URL `http://<IP_EC2>:3000`_ |
 | Compte rendu | ce document |
 
@@ -128,13 +128,13 @@ authentifié) :
 git push origin main
 
 # 1. Provisionner IoT Core (thing + policy + certificat + bucket S3)
-git clone https://github.com/<user>/<esatic-station-iot>.git
-cd esatic-station-iot
+git clone https://github.com/dkjme17-del/tp-Iot.git
+cd tp-Iot
 bash aws/setup-iot.sh
 #   → génère deploy/.env (endpoint ATS) et une URL pré-signée des certificats
 
 # 2. Lancer l'EC2 (security group, key pair, cloud-init Docker + compose)
-bash aws/launch-ec2.sh https://github.com/<user>/<esatic-station-iot>.git
+bash aws/launch-ec2.sh https://github.com/dkjme17-del/tp-Iot.git
 #   → affiche l'URL du tableau de bord : http://<IP>:3000
 ```
 
@@ -147,14 +147,16 @@ certificats depuis S3 (URL pré-signée, valable 7 jours), puis exécute
 
 ### Publication de l'image du capteur sur Docker Hub
 
+L'image est déjà publiée : [`dkjme17/esatic-sensor`](https://hub.docker.com/r/dkjme17/esatic-sensor).
+
 ```bash
 cd sensor
-docker build -t <dockerhub-user>/esatic-sensor:latest .
-docker push <dockerhub-user>/esatic-sensor:latest
+docker build -t dkjme17/esatic-sensor:latest .
+docker push dkjme17/esatic-sensor:latest
 ```
 
-Puis renseigner `DOCKERHUB_USER=<dockerhub-user>` dans `deploy/.env` avant le
-lancement de l'EC2 (l'EC2 tire l'image depuis Docker Hub).
+`DOCKERHUB_USER=dkjme17` (déjà renseigné dans `deploy/.env.example`) indique à
+l'EC2 quelle image tirer depuis Docker Hub.
 
 ## API
 

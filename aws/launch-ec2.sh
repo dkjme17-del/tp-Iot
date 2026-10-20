@@ -23,7 +23,7 @@ set -a; source deploy/.env; set +a
 REGION="${AWS_REGION:?}"
 ENDPOINT="${MQTT_ENDPOINT:?}"
 CERTS_URL="${CERTS_URL:?}"
-DOCKERHUB_USER="${DOCKERHUB_USER:-esatic}"
+DOCKERHUB_USER="${DOCKERHUB_USER:-dkjme17}"
 
 ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 BUCKET="esatic-iot-certs-${ACCOUNT}"
