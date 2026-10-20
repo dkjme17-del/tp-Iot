@@ -99,14 +99,14 @@ INSTANCE_TYPE="${INSTANCE_TYPE:-}"
 if [[ -z "${INSTANCE_TYPE}" ]]; then
   FT_LIST=$(aws ec2 describe-instance-types --filters "Name=free-tier-eligible,Values=true" --query 'InstanceTypes[].InstanceType' --output text 2>/dev/null | tr '\t' '\n' | tr -s '\n' ' ')
   echo "    types free tier disponibles: ${FT_LIST:-aucun}"
-  if [[ " ${FT_LIST} " == *" t4g.micro "* ]]; then
-    INSTANCE_TYPE=t4g.micro
-  elif [[ " ${FT_LIST} " == *" t3.micro "* ]]; then
+  if [[ " ${FT_LIST} " == *" t3.micro "* ]]; then
     INSTANCE_TYPE=t3.micro
   elif [[ " ${FT_LIST} " == *" t2.micro "* ]]; then
     INSTANCE_TYPE=t2.micro
+  elif [[ " ${FT_LIST} " == *" t8i.micro "* ]]; then
+    INSTANCE_TYPE=t8i.micro
   elif [[ -n "${FT_LIST}" && "${FT_LIST}" != "None" ]]; then
-    INSTANCE_TYPE=$(echo "${FT_LIST}" | awk '{print $1}')
+    INSTANCE_TYPE=$(echo "${FT_LIST}" | tr ' ' '\n' | grep -Ev 't4g|t3.small|t4g.small|c7g|m7g|t8g' | head -n1)
   else
     echo "ERREUR: aucun type d'instance free tier eligible dans cette region."
     echo "  Solution A: choisir une region ou le free tier est dispo (ex: eu-west-1)"
