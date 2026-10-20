@@ -1,0 +1,30 @@
+services:
+  backend:
+    build: ../backend
+    image: esatic-dashboard:latest
+    environment:
+      MQTT_URL: mqtts://${MQTT_ENDPOINT}:8883
+      MQTT_TOPIC: esatic/+/mesures
+      PORT: "3000"
+      CERT_PATH: /app/certs/cert.pem
+      KEY_PATH: /app/certs/private.key
+      CA_PATH: /app/certs/AmazonRootCA1.pem
+    ports:
+      - "${DASHBOARD_PORT:-3000}:3000"
+    volumes:
+      - ./certs:/app/certs:ro
+    restart: unless-stopped
+
+  sensor:
+    image: ${DOCKERHUB_USER:-esatic}/esatic-sensor:latest
+    environment:
+      MQTT_URL: mqtts://${MQTT_ENDPOINT}:8883
+      MQTT_TOPIC: ${MQTT_TOPIC_PUB:-esatic/station-01/mesures}
+      DEVICE_ID: ${DEVICE_ID:-station-01}
+      INTERVAL_MS: ${INTERVAL_MS:-5000}
+      CERT_PATH: /certs/cert.pem
+      KEY_PATH: /certs/private.key
+      CA_PATH: /certs/AmazonRootCA1.pem
+    volumes:
+      - ./certs:/certs:ro
+    restart: unless-stopped

@@ -1,0 +1,12 @@
+{
+  "name": "esatic-sensor",
+  "version": "1.0.0",
+  "description": "Simulateur de capteur temperature/humidite - publie vers MQTT (AWS IoT Core ou Mosquitto local)",
+  "main": "sensor.js",
+  "scripts": {
+    "start": "node sensor.js"
+  },
+  "dependencies": {
+    "mqtt": "^5.10.0"
+  }
+}

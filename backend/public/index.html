@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESATIC — Station de mesure connectée</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="logo">🌡️</span>
+      <div>
+        <h1>Station de mesure connectée</h1>
+        <p class="subtitle">ESATIC — surveillance température &amp; humidité des locaux</p>
+      </div>
+    </div>
+    <div class="badges">
+      <span id="ws-badge" class="badge badge-wait">WebSocket…</span>
+      <span id="broker-badge" class="badge badge-wait">Broker MQTT…</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="cards">
+      <div class="card">
+        <div class="card-label">Température</div>
+        <div class="card-value"><span id="temp-value">—</span><span class="unit">°C</span></div>
+        <div class="card-meta" id="temp-meta">en attente de mesures</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Humidité relative</div>
+        <div class="card-value"><span id="hum-value">—</span><span class="unit">%</span></div>
+        <div class="card-meta" id="hum-meta">en attente de mesures</div>
+      </div>
+      <div class="card card-small">
+        <div class="card-label">Capteur</div>
+        <div class="card-value-sm" id="device-id">—</div>
+        <div class="card-meta" id="last-update">—</div>
+      </div>
+    </section>
+
+    <section class="chart-panel">
+      <div class="chart-header">
+        <h2>Historique temps réel</h2>
+        <span class="chart-hint">dernières 100 mesures</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="chart"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    MQTT (AWS IoT Core) → Backend Node.js → WebSocket → Navigateur ·
+    Groupe 2 — <span id="clock">—</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
