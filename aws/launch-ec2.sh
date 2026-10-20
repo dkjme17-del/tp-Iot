@@ -97,11 +97,20 @@ EOF
 echo "==> [5/5] Lancement de l'instance (free tier)"
 INSTANCE_TYPE="${INSTANCE_TYPE:-}"
 if [[ -z "${INSTANCE_TYPE}" ]]; then
-  FT=$(aws ec2 describe-instance-types --instance-type t3.micro --query 'InstanceTypes[0].FreeTierEligible' --output text 2>/dev/null || echo false)
-  if [[ "${FT}" == "true" ]]; then
+  FT_LIST=$(aws ec2 describe-instance-types --filters "Name=free-tier-eligible,Values=true" --query 'InstanceTypes[].InstanceType' --output text 2>/dev/null || true)
+  echo "    types free tier disponibles: ${FT_LIST:-aucun}"
+  if [[ " ${FT_LIST} " == *" t3.micro "* ]]; then
     INSTANCE_TYPE=t3.micro
-  else
+  elif [[ " ${FT_LIST} " == *" t2.micro "* ]]; then
     INSTANCE_TYPE=t2.micro
+  elif [[ -n "${FT_LIST}" && "${FT_LIST}" != "None" ]]; then
+    INSTANCE_TYPE=$(echo "${FT_LIST}" | awk '{print $1}')
+  else
+    echo "ERREUR: aucun type d'instance free tier eligible dans cette region."
+    echo "  Solution A: choisir une region ou le free tier est dispo (ex: eu-west-1)"
+    echo "  Solution B: dans la console EC2 > Settings > Instance launch, decocher"
+    echo "             't2.micro et t3.micro only' / free tier filter, puis relancer"
+    exit 1
   fi
 fi
 echo "    type d'instance: ${INSTANCE_TYPE}"
